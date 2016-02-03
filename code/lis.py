@@ -38,7 +38,7 @@ def longest_increasing_subsequence(X):
     pos = M[L]
     while L > 0:
         values.append(X[pos])
-        indexes.append(pos)
+        indexes.append(pos-1)
         pos = P[pos]
         L -= 1
 
