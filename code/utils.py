@@ -125,8 +125,8 @@ def embedding_squared(connections, int_seq, ext_seq, chip_1, chip_2):
                  chip_2.values[connect[1]][0]+0.8+0.3*(num+1), #?????
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
-                 0-0.3*num,
-                 0-0.3*num,
+                 0-0.3*(num+1),
+                 0-0.3*(num+1),
                  chip_2.values[connect[1]][1], 
                  chip_2.values[connect[1]][1]]
         else:
