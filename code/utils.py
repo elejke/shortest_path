@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import 
+from shapely.geometry import Polygon
 
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
     """
@@ -95,59 +95,6 @@ def layers(chip_1, chip_2, connections):
     
     return new_points, subsequences
 
-def embedding_squared(connections, int_seq, ext_seq, chip_1, chip_2):
-    int_seq_lines = []
-    ext_seq_lines = []
-    
-    #internal lines formantion:
-    for connect in connections.values[int_seq]:
-        if chip_2.values[connect[1]][0] < 14.5:
-            int_seq_lines.append(([chip_1.values[connect[0]][0],
-                                  chip_1.values[connect[0]][0], 
-                                  chip_2.values[connect[1]][0]], 
-                                 [chip_1.values[connect[0]][1], 
-                                  chip_2.values[connect[1]][1], 
-                                  chip_2.values[connect[1]][1]]))
-        #if chip_2.values[connect[1]][0] > 14.5:
-        else:
-            int_seq_lines.append(([chip_1.values[connect[0]][0],
-                                  chip_1.values[connect[0]][0], 
-                                  chip_2.values[connect[1]][0]], 
-                                 [chip_1.values[connect[0]][1], 
-                                  chip_2.values[connect[1]][1]+0.3, 
-                                  chip_2.values[connect[1]][1]+0.3]))
-    
-    #external lines formation:
-    for num, connect in enumerate(connections.values[ext_seq]):
-        if chip_2.values[connect[1]][0] < 14.5:
-            x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0],
-                 chip_2.values[connect[1]][0]+0.8+0.3*(num+1), #?????
-                 chip_2.values[connect[1]][0]+0.8+0.3*(num+1), #?????
-                 chip_2.values[connect[1]][0]]
-            y = [chip_1.values[connect[0]][1],
-                 0-0.3*(num+1),
-                 0-0.3*(num+1),
-                 chip_2.values[connect[1]][1], 
-                 chip_2.values[connect[1]][1]]
-        else:
-            x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0],
-                 chip_2.values[connect[1]][0]+0.3*(num+1), #??????
-                 chip_2.values[connect[1]][0]+0.3*(num+1), #??????
-                 chip_2.values[connect[1]][0]]
-            y = [chip_1.values[connect[0]][1],
-                 0-0.3*(num+1),
-                 0-0.3*(num+1),
-                 chip_2.values[connect[1]][1], 
-                 chip_2.values[connect[1]][1]]
-            
-            
-        ext_seq_lines.append((x, y))
-    
-    return int_seq_lines, ext_seq_lines
-
-
 def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     """ DEVELOPMENT VERSION """
     
@@ -157,47 +104,22 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     
     #internal lines formantion:
     for connect in connections.values[int_seq]:
-        x = [chip_1.values[connect[0]][0], 
-             chip_1.values[connect[0]][0], 
-             14.0, 
-             chip_2.values[connect[1]][0]]
-        y = [chip_1.values[connect[0]][1], 
-             0.5, 
-             chip_2.values[connect[1]][1], 
-             chip_2.values[connect[1]][1]]
-
-        if chip_2.values[connect[1]][0] > 14.5:
-            y[2] = y[2] + 0.3
-            y[3] = y[3] + 0.3
-            
+        x = [chip_1.values[connect[0]][0], chip_1.values[connect[0]][0], 14.0, chip_2.values[connect[1]][0]]
+        y = [chip_1.values[connect[0]][1], 0.5, chip_2.values[connect[1]][1], chip_2.values[connect[1]][1]]
+        if chip_2.values[connect[1]][0] > 14.5: y[2] = y[3] = y[2] + 0.3
         int_seq_lines.append((x, y))
         
     x_int_max = np.max(np.array(int_seq_lines).T[0][0]) # 
     y_int_min = np.min(np.array(int_seq_lines).T[-1][1]) #
     
-    #calculation x_ext_max, y_ext_min: (GOVNOKOD)
-    for num, connect in enumerate(connections.values[ext_seq]):
+    #calculation x_ext_max, y_ext_min: (GOVNOKOD)  
+    x_ext_max = -10000
+    y_ext_min = 10000
+    for connect in connections.values[ext_seq]:
+        if chip_1.values[connect[0]][0] > x_ext_max: x_ext_max = chip_1.values[connect[0]][0]
         
-        x = [chip_1.values[connect[0]][0], 
-             chip_1.values[connect[0]][0], 
-             chip_2.values[connect[1]][0]+0.3*(num+1),
-             chip_2.values[connect[1]][0]+0.3*(num+1),
-             chip_2.values[connect[1]][0]]
-        y = [chip_1.values[connect[0]][1],
-             0-0.3*(num+1),
-             0-0.3*(num+1),
-             chip_2.values[connect[1]][1], 
-             chip_2.values[connect[1]][1]]
-         
-        if chip_2.values[connect[1]][0] < 14.5:
-            x[2] = x[2] + 0.8
-            x[3] = x[3] + 0.8
-        
-        ext_seq_lines_max.append((x, y))
-
-    x_ext_max = np.max(np.array(ext_seq_lines_max).T[0][0]) # 
-    y_ext_min = np.min(np.array(ext_seq_lines_max).T[-1][1]) #
-    
+        if chip_2.values[connect[1]][1] < y_ext_min: y_ext_min = chip_2.values[connect[1]][1]
+       
     x_turn = np.max([x_ext_max, x_int_max])
     y_turn = np.min([y_ext_min, y_int_min])
    
@@ -205,10 +127,10 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     for num, connect in enumerate(connections.values[ext_seq]):
         
         x = [chip_1.values[connect[0]][0], 
-             chip_1.values[connect[0]][0],
-             x_turn,
-             chip_2.values[connect[1]][0]+0.3*(num+1),
-             chip_2.values[connect[1]][0]+0.3*(num+1),
+             chip_1.values[connect[0]][0], 
+             x_turn, 
+             chip_2.values[connect[1]][0]+0.3*(num+1), 
+             chip_2.values[connect[1]][0]+0.3*(num+1), 
              chip_2.values[connect[1]][0]]
         y = [chip_1.values[connect[0]][1],
              0-0.3*(num+1),
@@ -218,8 +140,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
              chip_2.values[connect[1]][1]]
          
         if chip_2.values[connect[1]][0] < 14.5:
-            x[3] = x[3] + 0.8
-            x[4] = x[4] + 0.8
+            x[3] = x[4] = x[3] + 0.8
         
         ext_seq_lines.append((x, y))
     
