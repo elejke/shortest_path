@@ -145,3 +145,53 @@ def embedding_squared(connections, int_seq, ext_seq, chip_1, chip_2):
         ext_seq_lines.append((x, y))
     
     return int_seq_lines, ext_seq_lines
+
+
+def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
+    """ DEVELOPMENT VERSION """
+    
+    int_seq_lines = []
+    ext_seq_lines = []
+    
+    #internal lines formantion:
+    for connect in connections.values[int_seq]:
+        x = [chip_1.values[connect[0]][0], chip_1.values[connect[0]][0], 14.0, chip_2.values[connect[1]][0]]
+        y = [chip_1.values[connect[0]][1], 0.5]
+
+        if chip_2.values[connect[1]][0] > 14.5:
+            y.append(chip_2.values[connect[1]][1]+0.3)
+            y.append(chip_2.values[connect[1]][1]+0.3)
+        else:
+            y.append(chip_2.values[connect[1]][1])
+            y.append(chip_2.values[connect[1]][1])
+        int_seq_lines.append((x, y))
+    
+    #external lines formation:
+    for num, connect in enumerate(connections.values[ext_seq]):
+        if chip_2.values[connect[1]][0] < 14.5:
+            x = [chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
+                 chip_2.values[connect[1]][0]+0.8+0.3*(num+1), #?????
+                 chip_2.values[connect[1]][0]+0.8+0.3*(num+1), #?????
+                 chip_2.values[connect[1]][0]]
+            y = [chip_1.values[connect[0]][1],
+                 0-0.3*(num+1),
+                 0-0.3*(num+1),
+                 chip_2.values[connect[1]][1], 
+                 chip_2.values[connect[1]][1]]
+        else:
+            x = [chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
+                 chip_2.values[connect[1]][0]+0.3*(num+1), #??????
+                 chip_2.values[connect[1]][0]+0.3*(num+1), #??????
+                 chip_2.values[connect[1]][0]]
+            y = [chip_1.values[connect[0]][1],
+                 0-0.3*(num+1),
+                 0-0.3*(num+1),
+                 chip_2.values[connect[1]][1], 
+                 chip_2.values[connect[1]][1]]
+            
+            
+        ext_seq_lines.append((x, y))
+    
+    return int_seq_lines, ext_seq_lines
