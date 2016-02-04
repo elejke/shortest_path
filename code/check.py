@@ -41,17 +41,19 @@ def serve_route_table(newpoly):
 
 def serve_route_table_jump():
     global jumps_list
-    first_route = None
 
     for jump in jumps_list:
+        first_route = None
         for route in route_table:
             for poly in route:
                 if (poly["poly"].contains( jump )):
                     if first_route == None:
                         first_route = route
                     else:
-                        first_route += route
-                        route_table.remove( route )
+                        if route in route_table:
+                            first_route += route
+                            route_table.remove( route )
+                            break
 
 
 def parse_poly(command, solution):
