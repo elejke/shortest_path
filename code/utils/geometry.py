@@ -6,9 +6,13 @@ from shapely.geometry import Polygon
 from shapely.geometry import LineString
 from descartes.patch import PolygonPatch
 
+
 def line_to_poly(line, distance=0.05):
     """
     Line in format [(x_1, y_1), ..., (x_n, y_n)] to Polygon with 2*distance width
+    Args:
+        line (list): The list of dots in format [(x_1, y_1), ..., (x_n, y_n)]
+        distance (Optional[str]): width of polygon = 2*distance
     """
     return Polygon(line.buffer(distance, cap_style=2, join_style=2))
 

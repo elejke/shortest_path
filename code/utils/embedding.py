@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 
+from sys import maxint
+
+
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
     """
     Load and separete data by chips
@@ -9,9 +12,9 @@ def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='.
     connections = pd.read_csv(connections_file, ';', header=None) - 1
     chip_1 = coordinates[:40].drop([0, 1], axis=1)
     chip_2 = coordinates[40:].drop([0, 1], axis=1)
-    return chip_1, chip_2, connections #, coordinates
+    return chip_1, chip_2, connections
 
-#def min_distance(chip_1, chip_2, connections):
+# def min_distance(chip_1, chip_2, connections):
 #    """
 #    Minimal distance estimation
 #    """
@@ -22,6 +25,7 @@ def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='.
 
 
 def lis(X):
+    # EXTERNAL CODE
     """
     Find and return longest increasing subsequence of S.
     If multiple increasing subsequences exist, the one that ends
@@ -68,7 +72,8 @@ def lis(X):
     indexes.reverse()
     values.reverse()
     return indexes, values
-    
+
+
 def layers(chip_1, chip_2, connections):
     """TODO"""
     new_points = []
@@ -95,25 +100,28 @@ def layers(chip_1, chip_2, connections):
     
     return new_points, subsequences
 
+
 def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     """ DEVELOPMENT VERSION """
     
     int_seq_lines = []
     ext_seq_lines = []
     
-    #internal lines formantion:
+    # internal lines formantion:
     for connect in connections.values[int_seq]:
         x = [chip_1.values[connect[0]][0], chip_1.values[connect[0]][0], 14.0, chip_2.values[connect[1]][0]]
         y = [chip_1.values[connect[0]][1], 0.5, chip_2.values[connect[1]][1], chip_2.values[connect[1]][1]]
-        if chip_2.values[connect[1]][0] > 14.5: y[2] = y[3] = y[2] + 0.3
+        if chip_2.values[connect[1]][0] > 14.5:
+            y[2] += 0.3
+            y[3] += 0.3
         int_seq_lines.append((x, y))
         
-    x_int_max = np.max(np.array(int_seq_lines).T[0][0]) # 
-    y_int_min = np.min(np.array(int_seq_lines).T[-1][1]) #
+    x_int_max = np.max(np.array(int_seq_lines).T[0][0])
+    y_int_min = np.min(np.array(int_seq_lines).T[-1][1])
     
-    #calculation x_ext_max, y_ext_min: (GOVNOKOD)  
-    x_ext_max = -10000
-    y_ext_min = 10000
+    # calculation x_ext_max, y_ext_min:
+    x_ext_max = -maxint
+    y_ext_min = maxint
     for connect in connections.values[ext_seq]:
         if chip_1.values[connect[0]][0] > x_ext_max: x_ext_max = chip_1.values[connect[0]][0]
         
@@ -122,7 +130,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     x_turn = np.max([x_ext_max, x_int_max])
     y_turn = np.min([y_ext_min, y_int_min])
    
-    #external lines formation:
+    # external lines formation:
     for num, connect in enumerate(connections.values[ext_seq]):
         
         x = [chip_1.values[connect[0]][0], 
@@ -139,16 +147,18 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
              chip_2.values[connect[1]][1]]
          
         if chip_2.values[connect[1]][0] < 14.5:
-            x[3] = x[4] = x[3] + 0.8
+            x[3] += 0.8
+            x[4] += 0.8
         
         ext_seq_lines.append((x, y))
     
     return int_seq_lines, ext_seq_lines
 
-def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, emb = embedding, internal=True):
+
+def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, emb=embedding, internal=True):
     internal = (int(internal)+1)%2
-    return np.array([line.T for line in np.array(embedding(connections,
-                                                  int_seq, 
-                                                  ext_seq, 
-                                                  chip_1, 
-                                                  chip_2)[internal])])
+    return np.array([line.T for line in np.array(emb(connections,
+                                                           int_seq,
+                                                           ext_seq,
+                                                           chip_1,
+                                                           chip_2)[internal])])
