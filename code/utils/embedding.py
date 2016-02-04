@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from shapely.geometry import Polygon
 
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
     """
@@ -12,14 +11,15 @@ def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='.
     chip_2 = coordinates[40:].drop([0, 1], axis=1)
     return chip_1, chip_2, connections #, coordinates
 
-def min_distance(chip_1, chip_2, connections):
-    """
-    Minimal distance estimation
-    """
-    min_distance = 0.0
-    for i in connections.values:
-        min_distance += np.sqrt(np.sum((chip_1.values[i[0]-1]-chip_2.values[i[1]-1])**2))
-    return min_distance
+#def min_distance(chip_1, chip_2, connections):
+#    """
+#    Minimal distance estimation
+#    """
+#    min_distance = 0.0
+#    for i in connections.values:
+#        min_distance += np.sqrt(np.sum((chip_1.values[i[0]-1]-chip_2.values[i[1]-1])**2))
+#    return min_distance
+
 
 def lis(X):
     """
@@ -100,7 +100,6 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     
     int_seq_lines = []
     ext_seq_lines = []
-    ext_seq_lines_max = []
     
     #internal lines formantion:
     for connect in connections.values[int_seq]:
@@ -146,17 +145,10 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     
     return int_seq_lines, ext_seq_lines
 
-
-def line_to_poly(line, distance=0.05):
-    """
-    Line in format [(x_1, y_1), (x_2, y_2)] to Polygon with 2*distance width
-    """
-    return Polygon(line.buffer(distance, cap_style=2))
-
-def print_poly(poly, layer):
-    """Prints polygon in test-like style"""
-    points = np.array(poly.exterior.coords.xy).T[:-1]
-    points_count = len(points)
-    print 'POLY ' + str(points_count) + ' ' + str(layer)
-    for point in points:
-        print str(point[0]) + ', ' + str(point[1])
+def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, emb = embedding, internal=True):
+    internal = (int(internal)+1)%2
+    return np.array([line.T for line in np.array(embedding(connections,
+                                                  int_seq, 
+                                                  ext_seq, 
+                                                  chip_1, 
+                                                  chip_2)[internal])])
