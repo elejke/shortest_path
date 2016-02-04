@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
-    """lol"""
+    """
+    Load and separete data by chips
+    """
     coordinates = pd.read_csv(coordinates_file, ';', header=None, decimal=',')
     connections = pd.read_csv(connections_file, ';', header=None) - 1
     chip_1 = coordinates[:40].drop([0, 1], axis=1)
@@ -91,3 +93,55 @@ def layers(chip_1, chip_2, connections):
         residuals = np.array(residuals)[idxs].tolist()
     
     return new_points, subsequences
+
+def embedding_squared(connections, int_seq, ext_seq, chip_1, chip_2):
+    int_seq_lines = []
+    ext_seq_lines = []
+    
+    #internal lines formantion:
+    for connect in connections.values[int_seq]:
+        if chip_2.values[connect[1]][0] < 14.5:
+            int_seq_lines.append(([chip_1.values[connect[0]][0],
+                                  chip_1.values[connect[0]][0], 
+                                  chip_2.values[connect[1]][0]], 
+                                 [chip_1.values[connect[0]][1], 
+                                  chip_2.values[connect[1]][1], 
+                                  chip_2.values[connect[1]][1]]))
+        #if chip_2.values[connect[1]][0] > 14.5:
+        else:
+            int_seq_lines.append(([chip_1.values[connect[0]][0],
+                                  chip_1.values[connect[0]][0], 
+                                  chip_2.values[connect[1]][0]], 
+                                 [chip_1.values[connect[0]][1], 
+                                  chip_2.values[connect[1]][1]+0.3, 
+                                  chip_2.values[connect[1]][1]+0.3]))
+    
+    #external lines formation:
+    for num, connect in enumerate(connections.values[ext_seq]):
+        if chip_2.values[connect[1]][0] < 14.5:
+            x = [chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
+                 chip_2.values[connect[1]][0]+0.8+0.3*(num+1), #?????
+                 chip_2.values[connect[1]][0]+0.8+0.3*(num+1), #?????
+                 chip_2.values[connect[1]][0]]
+            y = [chip_1.values[connect[0]][1],
+                 0-0.3*num,
+                 0-0.3*num,
+                 chip_2.values[connect[1]][1], 
+                 chip_2.values[connect[1]][1]]
+        else:
+            x = [chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
+                 chip_2.values[connect[1]][0]+0.3*(num+1), #??????
+                 chip_2.values[connect[1]][0]+0.3*(num+1), #??????
+                 chip_2.values[connect[1]][0]]
+            y = [chip_1.values[connect[0]][1],
+                 0-0.3*num,
+                 0-0.3*num,
+                 chip_2.values[connect[1]][1], 
+                 chip_2.values[connect[1]][1]]
+            
+            
+        ext_seq_lines.append((x, y))
+    
+    return int_seq_lines, ext_seq_lines
