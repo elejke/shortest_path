@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import 
 
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
     """
@@ -223,3 +224,16 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
         ext_seq_lines.append((x, y))
     
     return int_seq_lines, ext_seq_lines
+
+
+def line_to_poly(line, distance=0.05):
+    """Line in format [(x_1, y_1), (x_2, y_2)] to Polygon"""
+    return Polygon(line.buffer(distance, cap_style=2))
+
+def print_poly(poly, layer):
+    """Prints polygon in test-like style"""
+    points = np.array(poly.exterior.coords.xy).T
+    points_count = len(points)
+    print 'POLY ' + str(points_count) + ' ' + str(layer)
+    for point in points:
+        print str(point[0]) + ', ' + str(point[1])
