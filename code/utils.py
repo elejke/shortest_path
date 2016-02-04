@@ -227,12 +227,14 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
 
 
 def line_to_poly(line, distance=0.05):
-    """Line in format [(x_1, y_1), (x_2, y_2)] to Polygon"""
+    """
+    Line in format [(x_1, y_1), (x_2, y_2)] to Polygon with 2*distance width
+    """
     return Polygon(line.buffer(distance, cap_style=2))
 
 def print_poly(poly, layer):
     """Prints polygon in test-like style"""
-    points = np.array(poly.exterior.coords.xy).T
+    points = np.array(poly.exterior.coords.xy).T[:-1]
     points_count = len(points)
     print 'POLY ' + str(points_count) + ' ' + str(layer)
     for point in points:
