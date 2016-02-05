@@ -7,6 +7,8 @@ from shapely.geometry import LineString
 from shapely.geometry import LinearRing
 from descartes.patch import PolygonPatch
 
+from sys import maxint
+
 
 def line_to_poly(raw_line, distance=0.05):
     """
@@ -70,17 +72,17 @@ def plot_all_lines(raw_lines, distance=0.05):
 
 
 def min_distance(raw_lines):
-    # min_dist = maxint
+    min_dist = maxint
     polygons = [line_to_poly(raw_line) for raw_line in raw_lines]
 
-    distances = [LinearRing(np.array(polygon.exterior.xy).T).distance(
-        LinearRing(np.array(polygon.exterior.xy).T)) for polygon in polygons]
+    #distances = [LinearRing(np.array(polygon.exterior.xy).T).distance(
+    #    LinearRing(np.array(polygon.exterior.xy).T)) for polygon in polygons]
 
-    # for i in range(len(polygons)):
-    #    for j in range(i+1, len(polygons)):
-    #        dist = LinearRing(np.array(polygons[i].exterior.xy).T).distance(
-    #            LinearRing(np.array(polygons[j].exterior.xy).T))
-    #        if min_dist > dist:
-    #            min_dist = dist
+    for i in range(len(polygons)):
+        for j in range(i+1, len(polygons)):
+            dist = LinearRing(np.array(polygons[i].exterior.xy).T).distance(
+                LinearRing(np.array(polygons[j].exterior.xy).T))
+            if min_dist > dist:
+                min_dist = dist
                 
-    return np.min(distances)
+    return min_dist
