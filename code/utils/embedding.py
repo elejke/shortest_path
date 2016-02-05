@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from geometry import min_distance
+
 
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
     """
@@ -73,7 +75,7 @@ def lis(X):
 
 
 def layers(chip_1, chip_2, connections):
-    """TODO"""
+
     new_points = []
     for num, connect in enumerate(connections.values):
         if chip_2.values[connect[1]][0] < 14.5:
@@ -104,7 +106,6 @@ def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
 
 
 def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
-    """ DEVELOPMENT VERSION """
     
     int_seq_lines = []
     ext_seq_lines = []
@@ -143,11 +144,11 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
             x[0] = x[1]
             x[-1] = x[-2]
             y[0] = y[1]
-            y[-1] =  y[-2]
+            y[-1] = y[-2]
 
         int_seq_lines.append((x, y))
     
-    x_turn = np.max(list(zip(*chip_1.values)[0]))
+    x_turn = np.max(list(zip(*chip_1.values)[0])) + 0.11
     y_turn = np.min(list(zip(*chip_2.values)[1])) - 0.15
     
     # external lines formation:
@@ -192,7 +193,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
             x[0] = x[1]
             x[-1] = x[-2]
             y[0] = y[1]
-            y[-1] =  y[-2]
+            y[-1] = y[-2]
         
         ext_seq_lines.append((x, y))
 
@@ -211,7 +212,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     return int_seq_lines, ext_seq_lines, jump_coordinates
 
 
-def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, layer):
+def get_lines(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     internal_lines = np.array([line.T for line in np.array(embedding(connections,
                                                                      int_seq,
                                                                      ext_seq,
@@ -228,11 +229,63 @@ def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, layer):
     return internal_lines, external_lines
 
 
-def get_jumps(connections, int_seq, ext_seq, chip_1,chip_2, layer):
+def optimize_embedding(internal_lines, external_lines):
+
+    internal_lines = np.array(sorted(internal_lines, key=lambda x: -x[0][0]))
+    external_lines = np.array(sorted(external_lines, key=lambda x: -x[0][0]))
+
+    for i in range(len(internal_lines)):
+
+        current_distance_to_internal = min_distance(internal_lines[i - 1:i + 1])
+        while i > 0 \
+                and not isclose(current_distance_to_internal, 0.1, abs_tol=0.00000000001) \
+                and current_distance_to_internal < 0.1:
+
+            initial_internal = internal_lines[i][3][0]
+
+            internal_lines[i][3][0] -= 0.001
+            distance_1 = min_distance(internal_lines[i - 1:i + 1])
+            internal_lines[i][3][0] = initial_internal
+
+            internal_lines[i][2][1] += 0.001
+            distance_2 = min_distance(internal_lines[i - 1:i + 1])
+            internal_lines[i][3][0] = initial_internal
+
+            if distance_1 > distance_2:
+                internal_lines[i][3][0] -= 0.001
+                current_distance_to_internal = distance_1
+            else:
+                internal_lines[i][2][1] += 0.001
+                current_distance_to_internal = distance_2
+
+        for j in range(len(external_lines)):
+
+            current_distance_to_external = min_distance([external_lines[j], internal_lines[i]])
+            while not isclose(current_distance_to_external, 0.1, abs_tol=0.00000000001)\
+                    and current_distance_to_external < 0.1:
+
+                initial_internal = internal_lines[i][3][0]
+
+                internal_lines[i][3][0] -= 0.001
+                distance_1 = min_distance([external_lines[j], internal_lines[i]])
+                internal_lines[i][3][0] = initial_internal
+
+                internal_lines[i][2][1] += 0.001
+                distance_2 = min_distance([external_lines[j], internal_lines[i]])
+                internal_lines[i][3][0] = initial_internal
+
+                if distance_1 > distance_2:
+                    internal_lines[i][3][0] -= 0.001
+                    current_distance_to_external = distance_1
+                else:
+                    internal_lines[i][2][1] += 0.001
+                    current_distance_to_external = distance_2
+
+
+def get_jumps(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     return embedding(connections,
                      int_seq,
                      ext_seq,
                      chip_1,
                      chip_2,
                      layer)[2]
-
