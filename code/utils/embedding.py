@@ -108,6 +108,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     int_seq_lines = []
     ext_seq_lines = []
     jump_coordinates = []
+    jump_lines = []
 
     # internal lines formation:
     for connect in connections.values[int_seq]:
@@ -200,31 +201,35 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     if layer == 1:
         for connect in connections.values[list(set(range(40)) - set(ext_seq) - set(int_seq))]:
             jump_coordinates.append([chip_1.values[connect[0]][0] + 0.11, chip_1.values[connect[0]][1]])
+            jump_lines.append(
+                ([chip_1.values[connect[0]][0], chip_1.values[connect[0]][0] + 0.11],
+                 [chip_1.values[connect[0]][1], chip_1.values[connect[0]][1]])
+            )
             if chip_2.values[connect[1]][0] < 14.5:
-                jump_coordinates.append([14.0,
+                jump_coordinates.append([chip_2.values[connect[1]][0],
                                          chip_2.values[connect[1]][1] - 0.15])
+                jump_lines.append(
+                    ([chip_2.values[connect[1]][0], chip_2.values[connect[1]][0]],
+                     [chip_2.values[connect[1]][1], chip_2.values[connect[1]][1] - 0.15])
+                )
             else:
                 jump_coordinates.append([chip_2.values[connect[1]][0],
                                          chip_2.values[connect[1]][1] + 0.15])
+                jump_lines.append(
+                    ([chip_2.values[connect[1]][0], chip_2.values[connect[1]][0]],
+                     [chip_2.values[connect[1]][1], chip_2.values[connect[1]][1] + 0.15])
+                )
 
-    return int_seq_lines, ext_seq_lines, jump_coordinates
+    return int_seq_lines, ext_seq_lines, jump_lines, jump_coordinates
 
 
 def get_lines(connections, int_seq, ext_seq, chip_1, chip_2, layer):
-    internal_lines = np.array([line.T for line in np.array(embedding(connections,
-                                                                     int_seq,
-                                                                     ext_seq,
-                                                                     chip_1,
-                                                                     chip_2,
-                                                                     layer)[0])])
-    external_lines = np.array([line.T for line in np.array(embedding(connections,
-                                                                     int_seq,
-                                                                     ext_seq,
-                                                                     chip_1,
-                                                                     chip_2,
-                                                                     layer)[1])])
+    emb = embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer)
+    internal_lines = np.array([line.T for line in np.array(emb[0])])
+    external_lines = np.array([line.T for line in np.array(emb[1])])
+    jump_lines = np.array([line.T for line in np.array(emb[2])])
     
-    return internal_lines, external_lines
+    return internal_lines, external_lines, jump_lines
 
 
 def optimize_embedding(internal_lines, external_lines):
@@ -286,4 +291,4 @@ def get_jumps(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                      ext_seq,
                      chip_1,
                      chip_2,
-                     layer)[2]
+                     layer)[3]
