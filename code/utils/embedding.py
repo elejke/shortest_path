@@ -7,21 +7,16 @@ from geometry import min_distance
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
     """
     Load and separete data by chips
+
+    Args:
+        coordinates_file (file): file with coordinates of pins
+        connections_file (file): file with required connections between pins
     """
     coordinates = pd.read_csv(coordinates_file, ';', header=None, decimal=',')
     connections = pd.read_csv(connections_file, ';', header=None) - 1
     chip_1 = coordinates[:40].drop([0, 1], axis=1)
     chip_2 = coordinates[40:].drop([0, 1], axis=1)
     return chip_1, chip_2, connections
-
-# def min_distance(chip_1, chip_2, connections):
-#    """
-#    Minimal distance estimation
-#    """
-#    min_distance = 0.0
-#    for i in connections.values:
-#        min_distance += np.sqrt(np.sum((chip_1.values[i[0]-1]-chip_2.values[i[1]-1])**2))
-#    return min_distance
 
 
 def lis(X):
@@ -32,6 +27,9 @@ def lis(X):
     with the smallest value is preferred, and if multiple
     occurrences of that value can end the sequence, then the
     earliest occurrence is preferred.
+
+    Args:
+        X (list): sequence to find lis
     """
     n = len(X)
     X = [None] + X  # Pad sequence so that it starts at X[1]
