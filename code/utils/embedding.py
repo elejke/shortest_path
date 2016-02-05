@@ -194,8 +194,20 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
             y[-1] =  y[-2]
         
         ext_seq_lines.append((x, y))
-    
-    return int_seq_lines, ext_seq_lines
+
+    # jumps processing:
+
+    if layer == 1:
+        for connect in connections.values[list(set(range(40)) - set(ext_seq) - set(int_seq))]:
+            jump_coordinates.append([chip_1.values[connect[0]][0] + 0.11, chip_1.values[connect[0]][1]])
+            if chip_2.values[connect[1]][0] < 14.5:
+                jump_coordinates.append([14.0,
+                                         chip_2.values[connect[1]][1] - 0.15])
+            else:
+                jump_coordinates.append([chip_2.values[connect[1]][0],
+                                         chip_2.values[connect[1]][1] + 0.15])
+
+    return int_seq_lines, ext_seq_lines, jump_coordinates
 
 
 def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, layer):
@@ -213,3 +225,13 @@ def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, layer):
                                                                      layer)[1])])
     
     return internal_lines, external_lines
+
+
+def get_jumps(connections, int_seq, ext_seq, chip_1,chip_2, layer):
+    return embedding(connections,
+                     int_seq,
+                     ext_seq,
+                     chip_1,
+                     chip_2,
+                     layer)[2]
+
