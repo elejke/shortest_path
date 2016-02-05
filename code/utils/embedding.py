@@ -108,6 +108,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     
     int_seq_lines = []
     ext_seq_lines = []
+    jump_coordinates = []
 
     # internal lines formation:
     for connect in connections.values[int_seq]:
