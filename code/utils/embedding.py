@@ -283,12 +283,8 @@ def optimize_embedding(internal_lines, external_lines):
                 else:
                     internal_lines[i][2][1] += 0.001
                     current_distance_to_external = distance_2
+    return internal_lines, external_lines
 
 
 def get_jumps(connections, int_seq, ext_seq, chip_1, chip_2, layer):
-    return embedding(connections,
-                     int_seq,
-                     ext_seq,
-                     chip_1,
-                     chip_2,
-                     layer)[3]
+    return embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer)[3]
