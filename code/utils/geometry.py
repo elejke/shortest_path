@@ -24,9 +24,8 @@ def _line_to_linestring(raw_line):
     Line in format [(), ..., ()] to LineString
     Args:
         raw_line (list): Connected dots
-        
     Example:
-    >>>_line_to_linestring([(0, 0), (0, 1), (1, 1)]).length
+    >>>_line_to_linestring([(0, 0), (0, 1), (1, 1), (1, 1)]).length
     2.0
     """
     return LineString(raw_line)
