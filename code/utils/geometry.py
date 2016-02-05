@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import matplotlib.pylab as plt
 
 from shapely.geometry import Polygon
@@ -38,7 +38,12 @@ def sum_length(raw_lines):
 
 
 def print_poly(poly, layer):
-    """Prints polygon in test-like style"""
+    """
+    Prints polygon in test-like style
+    Args:
+        poly (Polygon): Polygon to print
+        layer (int): The number of the layer
+    """
     points = np.array(poly.exterior.coords.xy).T[:-1]
     points_count = len(points)
     print 'POLY ' + str(points_count) + ' ' + str(layer)
