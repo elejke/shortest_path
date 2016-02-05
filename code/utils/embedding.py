@@ -108,8 +108,8 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     
     int_seq_lines = []
     ext_seq_lines = []
-    
-    # internal lines formantion:
+
+    # internal lines formation:
     for connect in connections.values[int_seq]:
         if chip_2.values[connect[1]][0] < 14.5:
             x = [chip_1.values[connect[0]][0],
@@ -137,39 +137,61 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][1] + 0.15,
                  chip_2.values[connect[1]][1] + 0.15,
                  chip_2.values[connect[1]][1]]
-        """TODO right shift"""
-        #if chip_2.values[connect[1]][0] > 14.5:
-        #    y[2] += 0.3
-        #    y[3] += 0.3
 
         if layer > 1:
-            x = x[1:-1]
-            y = y[1:-1]
+            x[0] = x[1]
+            x[-1] = x[-2]
+            y[0] = y[1]
+            y[-1] =  y[-2]
 
         int_seq_lines.append((x, y))
     
     x_turn = np.max(list(zip(*chip_1.values)[0]))
-    y_turn = np.min(list(zip(*chip_2.values)[1]))
+    y_turn = np.min(list(zip(*chip_2.values)[1])) - 0.15
     
     # external lines formation:
+    const = 0.29
     for num, connect in enumerate(connections.values[ext_seq]):
-        
-        x = [chip_1.values[connect[0]][0], 
-             chip_1.values[connect[0]][0], 
-             x_turn, 
-             chip_2.values[connect[1]][0]+0.3*(num+1), 
-             chip_2.values[connect[1]][0]+0.3*(num+1), 
-             chip_2.values[connect[1]][0]]
-        y = [chip_1.values[connect[0]][1],
-             0-0.3*(num+1),
-             0-0.3*(num+1),
-             y_turn,
-             chip_2.values[connect[1]][1], 
-             chip_2.values[connect[1]][1]]
-         
         if chip_2.values[connect[1]][0] < 14.5:
-            x[3] += 0.8
-            x[4] += 0.8
+            x = [chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 x_turn,
+                 chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
+                 chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
+                 chip_2.values[connect[1]][0],
+                 chip_2.values[connect[1]][0]]
+            y = [chip_1.values[connect[0]][1],
+                 chip_1.values[connect[0]][1],
+                 0-const*(num+1),
+                 0-const*(num+1),
+                 y_turn,
+                 chip_2.values[connect[1]][1] - 0.15,
+                 chip_2.values[connect[1]][1] - 0.15,
+                 chip_2.values[connect[1]][1]]
+        else:
+            x = [chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 x_turn,
+                 chip_2.values[connect[1]][0]+const*(num+1),
+                 chip_2.values[connect[1]][0]+const*(num+1),
+                 chip_2.values[connect[1]][0],
+                 chip_2.values[connect[1]][0]]
+            y = [chip_1.values[connect[0]][1],
+                 chip_1.values[connect[0]][1],
+                 0-const*(num+1),
+                 0-const*(num+1),
+                 y_turn,
+                 chip_2.values[connect[1]][1] + 0.15,
+                 chip_2.values[connect[1]][1] + 0.15,
+                 chip_2.values[connect[1]][1]]
+
+        if layer > 1:
+            x[0] = x[1]
+            x[-1] = x[-2]
+            y[0] = y[1]
+            y[-1] =  y[-2]
         
         ext_seq_lines.append((x, y))
     
