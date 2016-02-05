@@ -34,6 +34,12 @@ def _line_to_linestring(raw_line):
 
 
 def sum_length(raw_lines):
+    """
+    Find summarize length of all lines:
+
+    Args:
+        raw_lines (list): list of lines if format [(x_1, y_1), ..., (x_n, y_n)]
+    """
     lines_lengths = [_line_to_linestring(raw_line).length for raw_line in raw_lines]
     return np.sum(lines_lengths)
 
@@ -58,6 +64,13 @@ def _plot_coords(ax, ob):
 
 
 def plot_all_lines(raw_lines, distance=0.05):
+    """
+    Plot lines as polygons with width = 2 * distance
+
+    Args:
+        raw_lines (list): list of lines if format [(x_1, y_1), ..., (x_n, y_n)]
+        distance (float): half of minimal distance between every dots of polygon
+    """
     fig = plt.figure(1, figsize=[10, 10], dpi=90)
     
     ax = fig.add_subplot(1, 1, 1)
@@ -74,9 +87,6 @@ def plot_all_lines(raw_lines, distance=0.05):
 def min_distance(raw_lines):
     min_dist = maxint
     polygons = [line_to_poly(raw_line) for raw_line in raw_lines]
-
-    #distances = [LinearRing(np.array(polygon.exterior.xy).T).distance(
-    #    LinearRing(np.array(polygon.exterior.xy).T)) for polygon in polygons]
 
     for i in range(len(polygons)):
         for j in range(i+1, len(polygons)):
