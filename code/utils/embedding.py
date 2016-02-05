@@ -155,10 +155,16 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     return int_seq_lines, ext_seq_lines
 
 
-def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, emb=embedding, internal=True):
-    internal = (int(internal)+1)%2
-    return np.array([line.T for line in np.array(emb(connections,
+def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, emb=embedding):
+    internal_lines = np.array([line.T for line in np.array(emb(connections,
                                                            int_seq,
                                                            ext_seq,
                                                            chip_1,
-                                                           chip_2)[internal])])
+                                                           chip_2)[0])])
+    external_lines = np.array([line.T for line in np.array(emb(connections,
+                                                           int_seq,
+                                                           ext_seq,
+                                                           chip_1,
+                                                           chip_2)[1])])
+    
+    return internal_lines, external_lines

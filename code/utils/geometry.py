@@ -4,17 +4,38 @@ import matplotlib.pylab as plt
 
 from shapely.geometry import Polygon
 from shapely.geometry import LineString
+from shapely.geometry import LinearRing
 from descartes.patch import PolygonPatch
 
 
-def line_to_poly(line, distance=0.05):
+def line_to_poly(raw_line, distance=0.05):
     """
-    Line in format [(x_1, y_1), ..., (x_n, y_n)] to Polygon with 2*distance width
+    Line in format [(), ..., ()] to Polygon with 2*distance width
     Args:
-        line (list): The list of dots in format [(x_1, y_1), ..., (x_n, y_n)]
-        distance (Optional[str]): width of polygon = 2*distance
+        raw_line (list): Connected dots
+        distance (Optional[float]): width of polygon = 2*distance
     """
+    line = LineString(raw_line)
     return Polygon(line.buffer(distance, cap_style=2, join_style=2))
+
+
+def _line_to_linestring(raw_line):
+    """
+    Line in format [(), ..., ()] to LineString
+    Args:
+        raw_line (list): Connected dots
+        
+    Example:
+    >>>_line_to_linestring([(0, 0), (0, 1), (1, 1)]).length
+    2.0
+    """
+    return LineString(raw_line)
+
+
+def sum_length(raw_lines):
+    lines_lengths = [_line_to_linestring(raw_line).length for raw_line in raw_lines]
+    return np.sum(lines_lengths)
+
 
 def print_poly(poly, layer):
     """Prints polygon in test-like style"""
@@ -23,37 +44,37 @@ def print_poly(poly, layer):
     print 'POLY ' + str(points_count) + ' ' + str(layer)
     for point in points:
         print str(point[0]) + ', ' + str(point[1])
-        
-def plot_coords(ax, ob):
+
+
+def _plot_coords(ax, ob):
         x, y = ob.xy
         ax.plot(x, y, color='#999999', zorder=1)
-        
-def plot_all_lines(raw_lines):
+
+
+def plot_all_lines(raw_lines, distance=0.05):
     fig = plt.figure(1, figsize=[10, 10], dpi=90)
     
     ax = fig.add_subplot(1, 1, 1)
-    lines = []
     
     for raw_line in raw_lines:
-        line = LineString(raw_line)
-        lines.append(line)
-        polygon = line.buffer(0.05, cap_style=2, join_style=2)
+        line = _line_to_linestring(raw_line)
+        polygon = line.buffer(distance, cap_style=2, join_style=2)
         
-        plot_coords(ax, polygon.exterior)
+        _plot_coords(ax, polygon.exterior)
         patch = PolygonPatch(polygon, facecolor='blue', edgecolor='blue', alpha=0.5)
         ax.add_patch(patch)
 
+
 def min_distance(raw_lines):
     min_dist = 100000
-    lines = []
+    polygons = [line_to_poly(raw_line) for raw_line in raw_lines]
     
-    for raw_line in raw_lines:
-        line = LineString(raw_line)
-        lines.append(line)
-    
-    for i in range(len(lines)):
-        for j in range(i+1, len(lines)):
-            if min_dist > lines[i].distance(lines[j]):
-                min_dist = lines[i].distance(lines[j])
+    # GOVNO
+    for i in range(len(polygons)):
+        for j in range(i+1, len(polygons)):
+            dist = LinearRing(np.array(polygons[i].exterior.xy).T).distance(
+                LinearRing(np.array(polygons[j].exterior.xy).T))
+            if min_dist > dist:
+                min_dist = dist
                 
     return min_dist
