@@ -1,6 +1,7 @@
 import numpy as np
 # import pandas as pd
 import matplotlib.pylab as plt
+from sys import maxint
 
 from shapely.geometry import Polygon
 from shapely.geometry import LineString
@@ -71,7 +72,7 @@ def plot_all_lines(raw_lines, distance=0.05):
 
 
 def min_distance(raw_lines):
-    min_dist = 100000
+    min_dist = maxint
     polygons = [line_to_poly(raw_line) for raw_line in raw_lines]
     
     # GOVNO
