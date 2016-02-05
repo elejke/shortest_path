@@ -1,7 +1,6 @@
 import numpy as np
 # import pandas as pd
 import matplotlib.pylab as plt
-from sys import maxint
 
 from shapely.geometry import Polygon
 from shapely.geometry import LineString
@@ -72,15 +71,17 @@ def plot_all_lines(raw_lines, distance=0.05):
 
 
 def min_distance(raw_lines):
-    min_dist = maxint
+    # min_dist = maxint
     polygons = [line_to_poly(raw_line) for raw_line in raw_lines]
-    
-    # GOVNO
-    for i in range(len(polygons)):
-        for j in range(i+1, len(polygons)):
-            dist = LinearRing(np.array(polygons[i].exterior.xy).T).distance(
-                LinearRing(np.array(polygons[j].exterior.xy).T))
-            if min_dist > dist:
-                min_dist = dist
+
+    distances = [LinearRing(np.array(polygon.exterior.xy).T).distance(
+        LinearRing(np.array(polygon.exterior.xy).T)) for polygon in polygons]
+
+    # for i in range(len(polygons)):
+    #    for j in range(i+1, len(polygons)):
+    #        dist = LinearRing(np.array(polygons[i].exterior.xy).T).distance(
+    #            LinearRing(np.array(polygons[j].exterior.xy).T))
+    #        if min_dist > dist:
+    #            min_dist = dist
                 
-    return min_dist
+    return np.min(distances)
