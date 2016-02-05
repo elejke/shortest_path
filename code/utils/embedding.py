@@ -103,7 +103,7 @@ def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
     return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
-def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
+def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     """ DEVELOPMENT VERSION """
     
     int_seq_lines = []
@@ -113,8 +113,8 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     for connect in connections.values[int_seq]:
         if chip_2.values[connect[1]][0] < 14.5:
             x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0] + 0.11,
-                 chip_1.values[connect[0]][0] + 0.11,
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
                  14.0,
                  14.0,
                  14.0]
@@ -126,8 +126,8 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
                  chip_2.values[connect[1]][1]]
         else:
             x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0] + 0.11,
-                 chip_1.values[connect[0]][0] + 0.11,
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
                  14.0,
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0]]
@@ -141,6 +141,11 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
         #if chip_2.values[connect[1]][0] > 14.5:
         #    y[2] += 0.3
         #    y[3] += 0.3
+
+        if layer > 1:
+            x = x[1:-1]
+            y = y[1:-1]
+
         int_seq_lines.append((x, y))
     
     x_turn = np.max(list(zip(*chip_1.values)[0]))
@@ -171,16 +176,18 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2):
     return int_seq_lines, ext_seq_lines
 
 
-def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, emb=embedding):
-    internal_lines = np.array([line.T for line in np.array(emb(connections,
-                                                           int_seq,
-                                                           ext_seq,
-                                                           chip_1,
-                                                           chip_2)[0])])
-    external_lines = np.array([line.T for line in np.array(emb(connections,
-                                                           int_seq,
-                                                           ext_seq,
-                                                           chip_1,
-                                                           chip_2)[1])])
+def get_lines(connections, int_seq, ext_seq, chip_1,chip_2, layer):
+    internal_lines = np.array([line.T for line in np.array(embedding(connections,
+                                                                     int_seq,
+                                                                     ext_seq,
+                                                                     chip_1,
+                                                                     chip_2,
+                                                                     layer)[0])])
+    external_lines = np.array([line.T for line in np.array(embedding(connections,
+                                                                     int_seq,
+                                                                     ext_seq,
+                                                                     chip_1,
+                                                                     chip_2,
+                                                                     layer)[1])])
     
     return internal_lines, external_lines
