@@ -114,26 +114,26 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     for connect in connections.values[int_seq]:
         if chip_2.values[connect[1]][0] < 14.5:
             x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
                  14.0,
                  14.0,
                  14.0]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1],
+                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
                  0.5,
                  chip_2.values[connect[1]][1] - 0.15,
                  chip_2.values[connect[1]][1] - 0.15,
                  chip_2.values[connect[1]][1]]
         else:
             x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
                  14.0,
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1],
+                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
                  0.5,
                  chip_2.values[connect[1]][1] + 0.15,
                  chip_2.values[connect[1]][1] + 0.15,
@@ -155,15 +155,15 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     for num, connect in enumerate(connections.values[ext_seq]):
         if chip_2.values[connect[1]][0] < 14.5:
             x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
                  x_turn,
                  chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
                  chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1],
+                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
                  0-const*(num+1),
                  0-const*(num+1),
                  y_turn,
@@ -172,15 +172,15 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][1]]
         else:
             x = [chip_1.values[connect[0]][0],
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
-                 chip_1.values[connect[0]][0] + 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][0],
+                 chip_1.values[connect[0]][0],
                  x_turn,
                  chip_2.values[connect[1]][0]+const*(num+1),
                  chip_2.values[connect[1]][0]+const*(num+1),
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1],
+                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
                  0-const*(num+1),
                  0-const*(num+1),
                  y_turn,
@@ -200,10 +200,10 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
 
     if layer == 1:
         for connect in connections.values[list(set(range(40)) - set(ext_seq) - set(int_seq))]:
-            jump_coordinates.append([chip_1.values[connect[0]][0] + 0.11, chip_1.values[connect[0]][1]])
+            jump_coordinates.append([chip_1.values[connect[0]][0], chip_1.values[connect[0]][1] - 0.11])
             jump_lines.append(
-                ([chip_1.values[connect[0]][0], chip_1.values[connect[0]][0] + 0.11],
-                 [chip_1.values[connect[0]][1], chip_1.values[connect[0]][1]])
+                ([chip_1.values[connect[0]][0], chip_1.values[connect[0]][0]],
+                 [chip_1.values[connect[0]][1], chip_1.values[connect[0]][1] - 0.11])
             )
             if chip_2.values[connect[1]][0] < 14.5:
                 jump_coordinates.append([chip_2.values[connect[1]][0],
@@ -232,7 +232,7 @@ def get_lines(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     return internal_lines, external_lines, jump_lines
 
 
-def optimize_embedding(internal_lines, external_lines):
+def optimize_embedding(internal_lines, external_lines, jump_lines):
 
     internal_lines = np.array(sorted(internal_lines, key=lambda x: -x[0][0]))
     external_lines = np.array(sorted(external_lines, key=lambda x: -x[0][0]))
@@ -245,14 +245,14 @@ def optimize_embedding(internal_lines, external_lines):
                 and current_distance_to_internal < 0.1:
 
             initial_internal = internal_lines[i][3][0]
-
             internal_lines[i][3][0] -= 0.001
             distance_1 = min_distance(internal_lines[i - 1:i + 1])
             internal_lines[i][3][0] = initial_internal
 
+            initial_internal = internal_lines[i][2][1]
             internal_lines[i][2][1] += 0.001
             distance_2 = min_distance(internal_lines[i - 1:i + 1])
-            internal_lines[i][3][0] = initial_internal
+            internal_lines[i][2][1] = initial_internal
 
             if distance_1 > distance_2:
                 internal_lines[i][3][0] -= 0.001
@@ -268,14 +268,14 @@ def optimize_embedding(internal_lines, external_lines):
                     and current_distance_to_external < 0.1:
 
                 initial_internal = internal_lines[i][3][0]
-
                 internal_lines[i][3][0] -= 0.001
                 distance_1 = min_distance([external_lines[j], internal_lines[i]])
                 internal_lines[i][3][0] = initial_internal
 
+                initial_internal = internal_lines[i][2][1]
                 internal_lines[i][2][1] += 0.001
                 distance_2 = min_distance([external_lines[j], internal_lines[i]])
-                internal_lines[i][3][0] = initial_internal
+                internal_lines[i][2][1] = initial_internal
 
                 if distance_1 > distance_2:
                     internal_lines[i][3][0] -= 0.001
@@ -283,8 +283,33 @@ def optimize_embedding(internal_lines, external_lines):
                 else:
                     internal_lines[i][2][1] += 0.001
                     current_distance_to_external = distance_2
+
+        for j in range(len(jump_lines)):
+
+            current_distance_to_jump = min_distance([jump_lines[j], internal_lines[i]])
+            while not isclose(current_distance_to_jump, 0.1, abs_tol=0.00000000001)\
+                    and current_distance_to_jump < 0.1:
+
+                initial_internal = internal_lines[i][3][0]
+                internal_lines[i][3][0] -= 0.001
+                distance_1 = min_distance([jump_lines[j], internal_lines[i]])
+                internal_lines[i][3][0] = initial_internal
+
+                initial_internal = internal_lines[i][2][1]
+                internal_lines[i][2][1] += 0.001
+                distance_2 = min_distance([jump_lines[j], internal_lines[i]])
+                internal_lines[i][2][1] = initial_internal
+
+                if distance_1 > distance_2:
+                    internal_lines[i][3][0] -= 0.001
+                    current_distance_to_jump = distance_1
+                else:
+                    internal_lines[i][2][1] += 0.001
+                    current_distance_to_jump = distance_2
+
     return internal_lines, external_lines
 
 
 def get_jumps(connections, int_seq, ext_seq, chip_1, chip_2, layer):
-    return embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer)[3]
+    emb = embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer)
+    return emb[3], emb[2]

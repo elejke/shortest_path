@@ -53,9 +53,9 @@ def print_poly(poly, layer):
     """
     points = np.array(poly.exterior.coords.xy).T[:-1]
     points_count = len(points)
-    print 'POLY ' + str(points_count) + ' ' + str(layer)
+    print 'POLY ' + str(points_count) + ', ' + str(layer)
     for point in points:
-        print str(point[0]) + ', ' + str(point[1])
+        print str(point[0]).replace(".", ",") + '; ' + str(point[1]).replace(".", ",")
 
 
 def print_jumps(jumps):
@@ -66,7 +66,7 @@ def print_jumps(jumps):
         jumps (list): list of coordinates in format [(x_1, y_1), ..., (x_n, y_n)]
     """
     for jump in jumps:
-        print 'JUMP ' + str(jump[0]) + ' ' + str(jump[1])
+        print 'JUMP ' + str(jump[0]).replace(".", ",") + '; ' + str(jump[1]).replace(".", ",")
 
 
 def submit(int_lines_list, ext_lines_list, jump_lines, jumps):
@@ -80,8 +80,6 @@ def submit(int_lines_list, ext_lines_list, jump_lines, jumps):
         print_poly(line_to_poly(line), 1)
 
     print_jumps(jumps)
-
-
 
 
 def _plot_coords(ax, ob):
