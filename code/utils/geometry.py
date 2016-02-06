@@ -69,6 +69,21 @@ def print_jumps(jumps):
         print 'JUMP ' + str(jump[0]) + ' ' + str(jump[1])
 
 
+def submit(int_lines_list, ext_lines_list, jump_lines, jumps):
+    for layer, int_lines in enumerate(int_lines_list):
+        for line in int_lines:
+            print_poly(line_to_poly(line), layer+1)
+    for layer, ext_lines in enumerate(ext_lines_list):
+        for line in ext_lines:
+            print_poly(line_to_poly(line), layer+1)
+    for line in jump_lines:
+        print_poly(line_to_poly(line), 1)
+
+    print_jumps(jumps)
+
+
+
+
 def _plot_coords(ax, ob):
         x, y = ob.xy
         ax.plot(x, y, color='#999999', zorder=1)
@@ -105,5 +120,5 @@ def min_distance(raw_lines):
                 LinearRing(np.array(polygons[j].exterior.xy).T))
             if min_dist > dist:
                 min_dist = dist
-                
+
     return min_dist
