@@ -8,6 +8,7 @@ from shapely.geometry import LinearRing
 from descartes.patch import PolygonPatch
 
 from sys import maxint
+import sys
 
 
 def line_to_poly(raw_line, distance=0.05):
@@ -70,6 +71,9 @@ def print_jumps(jumps):
 
 
 def submit(int_lines_list, ext_lines_list, jump_lines, jumps):
+    temp = sys.stdout
+    sys.stdout = open("ans", "w")
+
     for layer, int_lines in enumerate(int_lines_list):
         for line in int_lines:
             print_poly(line_to_poly(line), layer+1)
@@ -80,6 +84,9 @@ def submit(int_lines_list, ext_lines_list, jump_lines, jumps):
         print_poly(line_to_poly(line), 1)
 
     print_jumps(jumps)
+
+    sys.stdout.close()
+    sys.stdout = temp
 
 
 def _plot_coords(ax, ob):
