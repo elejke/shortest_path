@@ -3,6 +3,8 @@ from array import array
 from shapely.geometry import Polygon
 from shapely.geometry import Point
 from shapely.ops import cascaded_union
+from utils.geometry import print_poly
+
 import locale
 import re
 import sys
@@ -46,7 +48,7 @@ def serve_route_table_jump():
         first_route = None
         for route in route_table:
             for poly in route:
-                if (poly["poly"].contains( jump )):
+                if (poly["poly"].intersects( jump )):
                     if first_route == None:
                         first_route = route
                     else:
@@ -113,7 +115,7 @@ def main():
     inputfile = sys.argv[1]
 
     #Load connect & coordinates files
-    with open('coordinates.csv', 'rU') as fcoords:
+    with open('../data/coordinates.csv', 'rU') as fcoords:
         csvreader = reader( fcoords, delimiter=';' )
         for row in csvreader:
             if (int(row[1]) == 1):
@@ -125,7 +127,7 @@ def main():
                                      float(row[2].replace(',', decimal_point)),
                                      float(row[3].replace(',', decimal_point)) )
 
-    with open('connect.csv', 'rU') as fcoords:
+    with open('../data/connect.csv', 'rU') as fcoords:
         csvreader = reader( fcoords, delimiter=';' )
         for row in csvreader:
             connect[int(row[0])] = int(row[1])
@@ -160,19 +162,22 @@ def main():
         if command == '':
             break
 
+    print [jump.xy for jump in jumps_list]
+
     serve_route_table_jump()
 
     correct_connections = {}
+
 
     #OK, checking connections are correct
     for pin_mcu, point_mcu in coordinates_mcu.iteritems():
         for route in route_table:
             for poly in route:
-                if poly["poly"].intersects(point_mcu.buffer(0.1)) and poly["layer"] == 1:
+                if poly["poly"].intersects(point_mcu.buffer(0.09)) and poly["layer"] == 1:
                     for pin_mem, point_mem in coordinates_mem.iteritems():
-                        if poly["poly"].intersects(point_mem.buffer(0.1)) and connect[pin_mcu] != pin_mem:
+                        if poly["poly"].intersects(point_mem.buffer(0.09)) and connect[pin_mcu] != pin_mem:
                             print "MCU pin %d and Memory pin %d are connected, though shouldn't" % (pin_mcu, pin_mem)
-                        elif poly["poly"].contains(point_mem):
+                        elif poly["poly"].intersects(point_mem.buffer(0.1)):# poly["poly"].contains(point_mem):
                             correct_connections[pin_mcu] = pin_mem
                     break
 
