@@ -1,9 +1,23 @@
-# import pandas as pd
-# import numpy as np
-from utils import layers, data_prepare
+import numpy as np
+import pandas as pd
+import matplotlib.pylab as plt
+import matplotlib.cm as mplcm
+import matplotlib.colors as colors
+from utils.embedding import *
+from utils.geometry import *
+from utils.constants import *
+from shapely.geometry import Point, LineString, Polygon, LinearRing
 
 chip_1, chip_2, connections = data_prepare()
 
-new_points, layers = layers(chip_1, chip_2, connections)
+new_points, subsequences = layers(chip_1, chip_2, connections)
 
-print layers
+subsequences_by_layers_1 = [[0, 1], [4, 7], [3, 6], [2, 5]]
+subsequences_by_layers_2 = [[0, 7], [1, 6], [2, 5], [3, None], [4, None]]
+K, L, V, S, mind, int_lines_list, ext_lines_list = \
+        objective(connections, subsequences, subsequences_by_layers_1, chip_1, chip_2)
+print "K = ", K
+print "L = ", L
+print "V = ", V
+print "S = ", S
+print "mind = ", mind

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from geometry import min_distance
+from geometry import *
 
 
 def data_prepare(coordinates_file='../data/coordinates.csv', connections_file='../data/connect.csv'):
@@ -232,13 +232,61 @@ def get_lines(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     return internal_lines, external_lines, jump_lines
 
 
-def optimize_embedding(internal_lines, external_lines, jump_lines):
+def break_external_by_separator(internal_lines, external_lines, separator, chip_1, chip_2):
+    x_turn = np.min(list(zip(*chip_1.values)[0])) - 0.21
+    y_turn = np.max(list(zip(*chip_2.values)[1])) + 0.21
+
+    shape_upper = (separator, 10, 2)
+    shape_lower = (len(external_lines)-separator, 10, 2)
+    upper_external = np.zeros(shape_upper)
+    lower_external = np.zeros(shape_lower)
+
+    const = 0.31
+    for num in range(separator):
+
+        connect_begin = external_lines[num][:2]
+        connect_end = external_lines[num][-2:]
+
+        connect_inter = [[connect_begin[-1][0], 0 - 0.2*(num+1) - 0.06],
+                         [x_turn - const*(num+1), 0 - 0.2*(num+1) - 0.06],
+                         [x_turn - const*(num+1), 0.1],
+                         [13.9, y_turn + const*(num+1)],
+                         [14.8 + 0.2*(num+1), y_turn + const*(num+1)],
+                         [14.8 + 0.2*(num+1), connect_end[0][1]]]
+
+        upper_external[num] = np.append(np.append(connect_begin, connect_inter, axis=0), connect_end, axis=0)
+
+    for num in range(len(external_lines)-separator):
+        lower_external[num] = np.append(external_lines[num+separator], np.array([external_lines[num+separator][-1],external_lines[num+separator][-1]]), axis=0)
+
+    return lower_external, upper_external
+
+
+def optimize_external_embedding(internal_lines, external_lines, chip_1, chip_2):
+    internal_lines = np.array(sorted(internal_lines, key=lambda x: x[0][0]))
+    external_lines = np.array(sorted(external_lines, key=lambda x: x[0][0]))
+
+    lengths = np.zeros(len(external_lines)+1)
+
+    for separator in range(len(external_lines)+1):
+        lower_external, upper_external = break_external_by_separator(internal_lines, external_lines, separator, chip_1, chip_2)
+        lengths[separator] = sum_length(lower_external) + sum_length(upper_external)
+
+    optimal_separator = np.argmin(lengths)
+    lower_external, upper_external = break_external_by_separator(internal_lines, external_lines, optimal_separator, chip_1, chip_2)
+    external_lines = np.append(lower_external, upper_external, axis=0)
+
+    return internal_lines, external_lines
+
+
+def optimize_embedding(internal_lines, external_lines, jump_lines, chip_1, chip_2):
 
     internal_lines = np.array(sorted(internal_lines, key=lambda x: -x[0][0]))
     external_lines = np.array(sorted(external_lines, key=lambda x: -x[0][0]))
 
     for i in range(len(internal_lines)):
 
+        # shifting line according to previous internal line
         current_distance_to_internal = min_distance(internal_lines[i - 1:i + 1])
         while i > 0 \
                 and not isclose(current_distance_to_internal, 0.1, abs_tol=0.00000000001) \
@@ -261,6 +309,7 @@ def optimize_embedding(internal_lines, external_lines, jump_lines):
                 internal_lines[i][2][1] += 0.001
                 current_distance_to_internal = distance_2
 
+        # shifting line according to external lines
         for j in range(len(external_lines)):
 
             current_distance_to_external = min_distance([external_lines[j], internal_lines[i]])
@@ -284,6 +333,7 @@ def optimize_embedding(internal_lines, external_lines, jump_lines):
                     internal_lines[i][2][1] += 0.001
                     current_distance_to_external = distance_2
 
+        # shifting line according to jump lines
         for j in range(len(jump_lines)):
 
             current_distance_to_jump = min_distance([jump_lines[j], internal_lines[i]])
@@ -306,6 +356,8 @@ def optimize_embedding(internal_lines, external_lines, jump_lines):
                 else:
                     internal_lines[i][2][1] += 0.001
                     current_distance_to_jump = distance_2
+
+    internal_lines, external_lines = optimize_external_embedding(internal_lines, external_lines, chip_1, chip_2)
 
     return internal_lines, external_lines
 

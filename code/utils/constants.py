@@ -34,7 +34,7 @@ def objective(connections, subsequences, subsequences_by_layers, chip_1, chip_2)
                                                    chip_1,
                                                    chip_2,
                                                    layer+1)
-        internal, external = optimize_embedding(internal, external, jump_lines)
+        internal, external = optimize_embedding(internal, external, jump_lines, chip_1, chip_2)
         int_lines_list.append(internal)
         ext_lines_list.append(external)
 
