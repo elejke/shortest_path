@@ -178,8 +178,8 @@ def main():
                     for pin_mem, point_mem in coordinates_mem.iteritems():
                         for poly2 in route:
                             if poly2["poly"].intersects(point_mem.buffer(0.05)) and poly2["layer"] == 1:
-                                print route
-                                print pin_mcu, pin_mem
+                                # print route
+                                # print pin_mcu, pin_mem
                                 if connect[pin_mcu] != pin_mem:
                                     print "MCU pin %d and Memory pin %d are connected, though shouldn't" % (pin_mcu, pin_mem)
                                 else:

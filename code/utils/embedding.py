@@ -122,8 +122,8 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
             y = [chip_1.values[connect[0]][1],
                  chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
                  0.5,
-                 chip_2.values[connect[1]][1] - 0.15,
-                 chip_2.values[connect[1]][1] - 0.15,
+                 chip_2.values[connect[1]][1] - 0.15 + 0.01 * int(layer > 1),
+                 chip_2.values[connect[1]][1] - 0.15 + 0.01 * int(layer > 1),
                  chip_2.values[connect[1]][1]]
         else:
             x = [chip_1.values[connect[0]][0],
@@ -135,8 +135,8 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
             y = [chip_1.values[connect[0]][1],
                  chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
                  0.5,
-                 chip_2.values[connect[1]][1] + 0.15,
-                 chip_2.values[connect[1]][1] + 0.15,
+                 chip_2.values[connect[1]][1] + 0.15 - 0.01 * int(layer > 1),
+                 chip_2.values[connect[1]][1] + 0.15 - 0.01 * int(layer > 1),
                  chip_2.values[connect[1]][1]]
 
         if layer > 1:
