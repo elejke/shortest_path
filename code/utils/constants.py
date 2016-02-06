@@ -28,7 +28,12 @@ def objective(connections, subsequences, subsequences_by_layers, chip_1, chip_2)
         if seq[1] is None:
             seq[1] = len(subsequences)-1
             was_none = True
-        internal, external, jump_lines = get_lines(connections, subsequences[seq[0]], subsequences[seq[1]], chip_1, chip_2, layer+1)
+        internal, external, jump_lines = get_lines(connections,
+                                                   subsequences[seq[0]],
+                                                   subsequences[seq[1]],
+                                                   chip_1,
+                                                   chip_2,
+                                                   layer+1)
         internal, external = optimize_embedding(internal, external, jump_lines)
         int_lines_list.append(internal)
         ext_lines_list.append(external)

@@ -47,10 +47,6 @@ def serve_route_table_jump():
     for jump in jumps_list:
         first_route = None
         for route in route_table:
-            #if len(route) == 2:
-            #    print jump
-            #    print poly["poly"]
-            #    print poly["poly"].intersects( jump )
             for poly in route:
                 if (poly["poly"].intersects( jump )):
                     if first_route == None:
