@@ -59,6 +59,12 @@ def print_poly(poly, layer):
 
 
 def print_jumps(jumps):
+    """
+    Print jumps in test-like style
+
+    Args:
+        jumps (list): list of coordinates in format [(x_1, y_1), ..., (x_n, y_n)]
+    """
     for jump in jumps:
         print 'JUMP ' + str(jump[0]) + ' ' + str(jump[1])
 
