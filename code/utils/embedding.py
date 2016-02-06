@@ -312,4 +312,4 @@ def optimize_embedding(internal_lines, external_lines, jump_lines):
 
 def get_jumps(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     emb = embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer)
-    return emb[3], emb[2]
+    return emb[3], np.array([line.T for line in np.array(emb[2])])

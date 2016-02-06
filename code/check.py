@@ -1,10 +1,10 @@
+# v 1.4
+#--------------------------------
 from csv import reader
 from array import array
 from shapely.geometry import Polygon
 from shapely.geometry import Point
 from shapely.ops import cascaded_union
-from utils.geometry import print_poly
-
 import locale
 import re
 import sys
@@ -47,6 +47,10 @@ def serve_route_table_jump():
     for jump in jumps_list:
         first_route = None
         for route in route_table:
+            #if len(route) == 2:
+            #    print jump
+            #    print poly["poly"]
+            #    print poly["poly"].intersects( jump )
             for poly in route:
                 if (poly["poly"].intersects( jump )):
                     if first_route == None:
@@ -162,23 +166,24 @@ def main():
         if command == '':
             break
 
-    print [jump.xy for jump in jumps_list]
-
     serve_route_table_jump()
 
     correct_connections = {}
-
 
     #OK, checking connections are correct
     for pin_mcu, point_mcu in coordinates_mcu.iteritems():
         for route in route_table:
             for poly in route:
-                if poly["poly"].intersects(point_mcu.buffer(0.09)) and poly["layer"] == 1:
+                if poly["poly"].intersects(point_mcu.buffer(0.05)) and poly["layer"] == 1:
                     for pin_mem, point_mem in coordinates_mem.iteritems():
-                        if poly["poly"].intersects(point_mem.buffer(0.09)) and connect[pin_mcu] != pin_mem:
-                            print "MCU pin %d and Memory pin %d are connected, though shouldn't" % (pin_mcu, pin_mem)
-                        elif poly["poly"].intersects(point_mem.buffer(0.1)):# poly["poly"].contains(point_mem):
-                            correct_connections[pin_mcu] = pin_mem
+                        for poly2 in route:
+                            if poly2["poly"].intersects(point_mem.buffer(0.05)) and poly2["layer"] == 1:
+                                print route
+                                print pin_mcu, pin_mem
+                                if connect[pin_mcu] != pin_mem:
+                                    print "MCU pin %d and Memory pin %d are connected, though shouldn't" % (pin_mcu, pin_mem)
+                                else:
+                                    correct_connections[pin_mcu] = pin_mem
                     break
 
     #Printing points that are not connected, but should be
