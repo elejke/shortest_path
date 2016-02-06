@@ -58,6 +58,17 @@ def print_poly(poly, layer):
         print str(point[0]) + ', ' + str(point[1])
 
 
+def print_jumps(jumps):
+    """
+    Print jumps in test-like style
+
+    Args:
+        jumps (list): list of coordinates in format [(x_1, y_1), ..., (x_n, y_n)]
+    """
+    for jump in jumps:
+        print 'JUMP ' + str(jump[0]) + ' ' + str(jump[1])
+
+
 def _plot_coords(ax, ob):
         x, y = ob.xy
         ax.plot(x, y, color='#999999', zorder=1)
