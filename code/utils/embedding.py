@@ -255,7 +255,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
 
     if layer == 1:
         for connect in connections.values[list(set(range(40)) - set(ext_seq) - set(int_seq))]:
-            jump_coordinates.append([chip_1.values[connect[0]][0], chip_1.values[connect[0]][1] - down_shift])
+            jump_coordinates.append([chip_1.values[connect[0]][0], chip_1.values[connect[0]][1] - down_shift + 0.1*down_shift])
             jump_lines.append(
                 ([chip_1.values[connect[0]][0], chip_1.values[connect[0]][0]],
                  [chip_1.values[connect[0]][1], chip_1.values[connect[0]][1] - down_shift])
@@ -307,8 +307,8 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
                          [x_turn - const*(num+1), 0 - 0.2*(num+1) - (down_shift-0.05)],
                          [x_turn - const*(num+1), 0.1],
                          [13.9, y_turn + const*(num+1)],
-                         [14.8 + 0.2*(num+1), y_turn + const*(num+1)],
-                         [14.8 + 0.2*(num+1), connect_end[0][1]]]
+                         [14.8 + 0.25*(num+1), y_turn + const*(num+1)],
+                         [14.8 + 0.25*(num+1), connect_end[0][1]]]
 
         upper_external[num] = np.append(np.append(connect_begin, connect_inter, axis=0), connect_end, axis=0)
 
