@@ -89,6 +89,9 @@ def layers(chip_1, chip_2, connections):
     while len(residuals) > 0:
         sequence = list(zip(*residuals)[1])
         longest_subseq = lis(sequence)
+        # find longest decreasing subsequence to determine the size of the minimal covering by increasing subsequences
+        # test_sequence = map(lambda x: -x, sequence)
+        # longes = lis(test_sequence)
         connection_idxs = np.array(zip(*np.array(residuals)[longest_subseq[0]].tolist())[2], dtype=np.int).tolist()
         subsequences.append(connection_idxs)
 
@@ -110,7 +113,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     jump_coordinates = []
     jump_lines = []
 
-    down_shift = 0.101 # change in two places
+    down_shift = 0.101  # change in two places
     # internal lines formation:
     for connect in connections.values[int_seq]:
         if chip_2.values[connect[1]][0] < 14.5:
@@ -244,7 +247,7 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
     lower_external = np.zeros(shape_lower)
 
     const = 0.31
-    down_shift = 0.101 # change in two places
+    down_shift = 0.101  # change in two places
     for num in range(separator):
 
         connect_begin = external_lines[num][:2]
@@ -260,7 +263,10 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
         upper_external[num] = np.append(np.append(connect_begin, connect_inter, axis=0), connect_end, axis=0)
 
     for num in range(len(external_lines)-separator):
-        lower_external[num] = np.append(external_lines[num+separator], np.array([external_lines[num+separator][-1],external_lines[num+separator][-1]]), axis=0)
+        lower_external[num] = np.append(external_lines[num+separator],
+                                        np.array([external_lines[num+separator][-1],
+                                                  external_lines[num+separator][-1]]),
+                                        axis=0)
 
     return lower_external, upper_external
 
@@ -272,11 +278,19 @@ def optimize_external_embedding(internal_lines, external_lines, chip_1, chip_2):
     lengths = np.zeros(len(external_lines)+1)
 
     for separator in range(len(external_lines)+1):
-        lower_external, upper_external = break_external_by_separator(internal_lines, external_lines, separator, chip_1, chip_2)
+        lower_external, upper_external = break_external_by_separator(internal_lines,
+                                                                     external_lines,
+                                                                     separator,
+                                                                     chip_1,
+                                                                     chip_2)
         lengths[separator] = sum_length(lower_external) + sum_length(upper_external)
 
     optimal_separator = np.argmin(lengths)
-    lower_external, upper_external = break_external_by_separator(internal_lines, external_lines, optimal_separator, chip_1, chip_2)
+    lower_external, upper_external = break_external_by_separator(internal_lines,
+                                                                 external_lines,
+                                                                 optimal_separator,
+                                                                 chip_1,
+                                                                 chip_2)
     external_lines = np.append(lower_external, upper_external, axis=0)
 
     return internal_lines, external_lines
