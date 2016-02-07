@@ -3,12 +3,17 @@ import numpy as np
 import matplotlib.pylab as plt
 
 from shapely.geometry import Polygon
+from shapely.geometry import Point
 from shapely.geometry import LineString
 from shapely.geometry import LinearRing
 from descartes.patch import PolygonPatch
 
 from sys import maxint
 import sys
+
+
+def is_close(a, b, rel_tol=1e-09, abs_tol=0.0):
+    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
 def line_to_poly(raw_line, distance=0.05):
@@ -125,5 +130,25 @@ def min_distance(raw_lines):
                 LinearRing(np.array(polygons[j].exterior.xy).T))
             if min_dist > dist:
                 min_dist = dist
+
+    return min_dist
+
+
+def min_distance_to_pins(raw_lines, pins):
+    min_dist = maxint
+    # polygons = [line_to_poly(raw_line) for raw_line in raw_lines]
+
+    for line in raw_lines:
+        for pin in pins:
+            dist = LinearRing(np.array(line_to_poly(line).exterior.xy).T).distance(
+                LinearRing(np.array(Point(pin).buffer(0.1).exterior.xy).T))
+
+            if min_dist > dist:
+                if not (is_close(pin[0], line[0][0], abs_tol=0.00000000001) and
+                            is_close(pin[1], line[0][1])) and not (
+                            is_close(pin[0], line[-1][0], abs_tol=0.00000000001) and\
+                                is_close(pin[1], line[-1][1])):
+                    min_dist = dist
+                    # print 'min_dist : ', min_dist
 
     return min_dist
