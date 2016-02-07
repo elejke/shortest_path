@@ -15,7 +15,7 @@ Skoltech hackathon "Shortest path" solution
 
 3. Предложение использовать по 2 набора таких непересекающихся соединений для укладки на один слой в таком виде:
 
-pic
+![My_img](https://github.com/elejke/shortest_path/blob/master/pics/embedding_nosq_test.png?raw=true)
 
 4. Оптимизация длины путём срезания углов.
 
