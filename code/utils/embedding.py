@@ -303,8 +303,8 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
         connect_begin = external_lines[num][:2]
         connect_end = external_lines[num][-4:]
 
-        connect_inter = [[connect_begin[-1][0], 0 - 0.2*(num+1) - (down_shift-0.05)],
-                         [x_turn - const*(num+1), 0 - 0.2*(num+1) - (down_shift-0.05)],
+        connect_inter = [[connect_begin[-1][0], 0 - 0.2*(num+1) - (1.2*down_shift-0.05)],
+                         [x_turn - const*(num+1), 0 - 0.2*(num+1) - (1.2*down_shift-0.05)],
                          [x_turn - const*(num+1), 0.1],
                          [13.9, y_turn + const*(num+1)],
                          [14.8 + 0.25*(num+1), y_turn + const*(num+1)],
