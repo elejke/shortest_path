@@ -5,7 +5,7 @@ Skoltech hackathon "Shortest path" solution
 
 1. Отрисовка в виде прямоугольных линий
 
-![alt tag](https://raw.github.com/elejke/shortest_path/blob/master/pics/squared_all.png)
+![alt tag](https://raw.github.com/elejke/shortest_path/master/pics/squared_all.png)
 
 2.1 Предложение выделять наибольшие по вложению последовательности;
 2.2 Решение с помощью проектирования координат на одну ось и использования алгоритма поиска максимальной возрастающей подпоследовательности. Результат (на картинке) наборы таких соединений:
