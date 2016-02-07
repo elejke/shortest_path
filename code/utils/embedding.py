@@ -110,6 +110,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     jump_coordinates = []
     jump_lines = []
 
+    down_shift = 0.101 # change in two places
     # internal lines formation:
     for connect in connections.values[int_seq]:
         if chip_2.values[connect[1]][0] < 14.5:
@@ -120,7 +121,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  14.0,
                  14.0]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][1] - down_shift * int(layer > 1),
                  0.5,
                  chip_2.values[connect[1]][1] - 0.15 + 0.01 * int(layer > 1),
                  chip_2.values[connect[1]][1] - 0.15 + 0.01 * int(layer > 1),
@@ -133,7 +134,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][1] - down_shift * int(layer > 1),
                  0.5,
                  chip_2.values[connect[1]][1] + 0.15 - 0.01 * int(layer > 1),
                  chip_2.values[connect[1]][1] + 0.15 - 0.01 * int(layer > 1),
@@ -152,6 +153,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     
     # external lines formation:
     const = 0.29
+
     for num, connect in enumerate(connections.values[ext_seq]):
         if chip_2.values[connect[1]][0] < 14.5:
             x = [chip_1.values[connect[0]][0],
@@ -163,7 +165,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][1] - down_shift * int(layer > 1),
                  0-const*(num+1),
                  0-const*(num+1),
                  y_turn,
@@ -180,7 +182,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
-                 chip_1.values[connect[0]][1] - 0.11 * int(layer > 1),
+                 chip_1.values[connect[0]][1] - down_shift * int(layer > 1),
                  0-const*(num+1),
                  0-const*(num+1),
                  y_turn,
@@ -200,10 +202,10 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
 
     if layer == 1:
         for connect in connections.values[list(set(range(40)) - set(ext_seq) - set(int_seq))]:
-            jump_coordinates.append([chip_1.values[connect[0]][0], chip_1.values[connect[0]][1] - 0.11])
+            jump_coordinates.append([chip_1.values[connect[0]][0], chip_1.values[connect[0]][1] - down_shift])
             jump_lines.append(
                 ([chip_1.values[connect[0]][0], chip_1.values[connect[0]][0]],
-                 [chip_1.values[connect[0]][1], chip_1.values[connect[0]][1] - 0.11])
+                 [chip_1.values[connect[0]][1], chip_1.values[connect[0]][1] - down_shift])
             )
             if chip_2.values[connect[1]][0] < 14.5:
                 jump_coordinates.append([chip_2.values[connect[1]][0],
@@ -242,13 +244,14 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
     lower_external = np.zeros(shape_lower)
 
     const = 0.31
+    down_shift = 0.101 # change in two places
     for num in range(separator):
 
         connect_begin = external_lines[num][:2]
         connect_end = external_lines[num][-2:]
 
-        connect_inter = [[connect_begin[-1][0], 0 - 0.2*(num+1) - 0.06],
-                         [x_turn - const*(num+1), 0 - 0.2*(num+1) - 0.06],
+        connect_inter = [[connect_begin[-1][0], 0 - 0.2*(num+1) - (down_shift-0.05)],
+                         [x_turn - const*(num+1), 0 - 0.2*(num+1) - (down_shift-0.05)],
                          [x_turn - const*(num+1), 0.1],
                          [13.9, y_turn + const*(num+1)],
                          [14.8 + 0.2*(num+1), y_turn + const*(num+1)],
