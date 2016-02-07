@@ -7,9 +7,7 @@ Skoltech hackathon "Shortest path" solution
 
 ![My_img](https://github.com/elejke/shortest_path/blob/master/pics/squared_all.png?raw=true)
 
-2.1 Предложение выделять наибольшие по вложению последовательности
-
-2.2 Решение с помощью проектирования координат на одну ось и использования алгоритма поиска максимальной возрастающей подпоследовательности. Результат - наборы таких соединений (на картинке отмечены одним цветом):
+2. Выделение наибольших по вложению последовательностей. Решение с помощью проектирования координат на одну ось и использования алгоритма поиска максимальной возрастающей подпоследовательности. Результат - наборы таких соединений (на картинке отмечены одним цветом):
 
 ![My_img](https://github.com/elejke/shortest_path/blob/master/pics/lis_all.png?raw=true)
 
@@ -19,7 +17,7 @@ Skoltech hackathon "Shortest path" solution
 
 4. Оптимизация длины путём срезания углов.
 
-https://github.com/elejke/shortest_path/blob/master/pics/embedding_with_turns.png?raw=true
+![My_img](https://github.com/elejke/shortest_path/blob/master/pics/embedding_with_turns.png?raw=true)
 
 5. Дополнительная оптимизация - проведение некоторых соединений из внешнего (нижнего) круга через верх от внутренних.
 
