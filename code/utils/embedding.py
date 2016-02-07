@@ -291,8 +291,8 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
     x_turn = np.min(list(zip(*chip_1.values)[0])) - 0.21
     y_turn = np.max(list(zip(*chip_2.values)[1])) + 0.21
 
-    shape_upper = (separator, 10, 2)
-    shape_lower = (len(external_lines)-separator, 10, 2)
+    shape_upper = (separator, 12, 2)
+    shape_lower = (len(external_lines)-separator, 12, 2)
     upper_external = np.zeros(shape_upper)
     lower_external = np.zeros(shape_lower)
 
@@ -301,7 +301,7 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
     for num in range(separator):
 
         connect_begin = external_lines[num][:2]
-        connect_end = external_lines[num][-2:]
+        connect_end = external_lines[num][-4:]
 
         connect_inter = [[connect_begin[-1][0], 0 - 0.2*(num+1) - (down_shift-0.05)],
                          [x_turn - const*(num+1), 0 - 0.2*(num+1) - (down_shift-0.05)],
