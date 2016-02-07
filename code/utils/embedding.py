@@ -445,3 +445,15 @@ def optimize_embedding(internal_lines, external_lines, jump_lines, chip_1, chip_
 def get_jumps(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     emb = embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer)
     return emb[3], np.array([line.T for line in np.array(emb[2])])
+
+
+def napilnik_lol(ext_lines_list):
+    for i in range(2, 9):
+        ext_lines_list[0][8][-i] = [13.0, 15.8]
+    #ext_lines_list[0][0][-7:-1] = [[12.7, 16.1],
+    #                               [12.7, 16.1],
+    #                               [12.7, 16.1],
+    #                               [14.4, 16.1],
+    #                               [14.4, 15.2],
+    #                               [14.0, 15.2]]
+    return ext_lines_list

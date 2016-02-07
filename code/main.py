@@ -21,7 +21,7 @@ K, L, V, S, mind, int_lines_list, ext_lines_list = \
 jump_coordinates, jump_lines = get_jumps(connections, subsequences[subsequences_by_layers_1[0][0]],
                                          subsequences[subsequences_by_layers_1[0][1]], chip_1, chip_2, 1)
 
-submit("submission", int_lines_list, ext_lines_list, jump_lines, jump_coordinates)
+submit("submission", int_lines_list, napilnik_lol(ext_lines_list[:]), jump_lines, jump_coordinates)
 
 print "K = ", K
 print "L = ", L
