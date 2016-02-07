@@ -124,7 +124,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  14.0,
                  14.0,
                  14.0,
-                 14.0 + 0.101,
+                 14.0 + 0.102,
                  14.0]
             y = [chip_1.values[connect[0]][1],
                  chip_1.values[connect[0]][1] - down_shift * int(layer > 1),
@@ -145,7 +145,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  14.0,
                  chip_2.values[connect[1]][0] - 0.6,
                  chip_2.values[connect[1]][0] - 0.2,
-                 chip_2.values[connect[1]][0] - 0.101,
+                 chip_2.values[connect[1]][0] - 0.1,
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
                  chip_1.values[connect[0]][1] - down_shift * int(layer > 1),
@@ -196,7 +196,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  # old chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0] + 0.2,
 
-                 chip_2.values[connect[1]][0] + 0.101,
+                 chip_2.values[connect[1]][0] + 0.100,
 
                  chip_2.values[connect[1]][0]]
 
@@ -227,7 +227,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][0] + const * (num + 1),
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0],
-                 chip_2.values[connect[1]][0] - 0.101,
+                 chip_2.values[connect[1]][0] - 0.102,
                  chip_2.values[connect[1]][0]]
             y = [chip_1.values[connect[0]][1],
                  chip_1.values[connect[0]][1] - down_shift * int(layer > 1),
@@ -264,15 +264,15 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                 jump_coordinates.append([chip_2.values[connect[1]][0] + 0.101,
                                          chip_2.values[connect[1]][1]])
                 jump_lines.append(
-                    ([chip_2.values[connect[1]][0], chip_2.values[connect[1]][0]],
-                     [chip_2.values[connect[1]][1] + 0.101, chip_2.values[connect[1]][1]])
+                    ([chip_2.values[connect[1]][0], chip_2.values[connect[1]][0] + 0.102],
+                     [chip_2.values[connect[1]][1], chip_2.values[connect[1]][1]])
                 )
             else:
                 jump_coordinates.append([chip_2.values[connect[1]][0] - 0.101,
                                          chip_2.values[connect[1]][1]])
                 jump_lines.append(
-                    ([chip_2.values[connect[1]][0], chip_2.values[connect[1]][0]],
-                     [chip_2.values[connect[1]][1] - 0.101, chip_2.values[connect[1]][1]])
+                    ([chip_2.values[connect[1]][0], chip_2.values[connect[1]][0] - 0.102],
+                     [chip_2.values[connect[1]][1], chip_2.values[connect[1]][1]])
                 )
 
     return int_seq_lines, ext_seq_lines, jump_lines, jump_coordinates
