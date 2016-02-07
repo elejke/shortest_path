@@ -19,7 +19,7 @@ Skoltech hackathon "Shortest path" solution
 
 4. Оптимизация длины путём срезания углов.
 
-pic
+https://github.com/elejke/shortest_path/blob/master/pics/embedding_with_turns.png?raw=true
 
 5. Дополнительная оптимизация - проведение некоторых соединений из внешнего (нижнего) круга через верх от внутренних.
 
