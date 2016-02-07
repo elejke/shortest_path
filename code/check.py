@@ -48,7 +48,7 @@ def serve_route_table_jump():
         first_route = None
         for route in route_table:
             for poly in route:
-                if (poly["poly"].intersects( jump )):
+                if (poly["poly"].contains( jump )):
                     if first_route == None:
                         first_route = route
                     else:
@@ -170,12 +170,10 @@ def main():
     for pin_mcu, point_mcu in coordinates_mcu.iteritems():
         for route in route_table:
             for poly in route:
-                if poly["poly"].intersects(point_mcu.buffer(0.05)) and poly["layer"] == 1:
+                if poly["poly"].intersects(point_mcu.buffer(0.1)) and poly["layer"] == 1:
                     for pin_mem, point_mem in coordinates_mem.iteritems():
                         for poly2 in route:
-                            if poly2["poly"].intersects(point_mem.buffer(0.05)) and poly2["layer"] == 1:
-                                # print route
-                                # print pin_mcu, pin_mem
+                            if poly2["poly"].intersects(point_mem.buffer(0.1)) and poly2["layer"] == 1:
                                 if connect[pin_mcu] != pin_mem:
                                     print "MCU pin %d and Memory pin %d are connected, though shouldn't" % (pin_mcu, pin_mem)
                                 else:
