@@ -75,9 +75,9 @@ def print_jumps(jumps):
         print 'JUMP ' + str(jump[0]).replace(".", ",") + '; ' + str(jump[1]).replace(".", ",")
 
 
-def submit(int_lines_list, ext_lines_list, jump_lines, jumps):
+def submit(filename, int_lines_list, ext_lines_list, jump_lines, jumps):
     temp = sys.stdout
-    sys.stdout = open("ans", "w")
+    sys.stdout = open(filename, "w")
 
     for layer, int_lines in enumerate(int_lines_list):
         for line in int_lines:

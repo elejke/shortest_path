@@ -176,8 +176,15 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
     
     # external lines formation:
     const = 0.29
+    const1 = 0.2
+    const2 = 0.24
+    const3 = 0.2
 
     for num, connect in enumerate(connections.values[ext_seq]):
+        if num == 0:
+            prev_chip2_connection_y = chip_2.values[connect[1]][1] - 0.3
+        else:
+            prev_chip2_connection_y = chip_2.values[connect[1]][1] - 0.3
         if chip_2.values[connect[1]][0] < 14.5:
             x = [chip_1.values[connect[0]][0],
                  chip_1.values[connect[0]][0],
@@ -188,7 +195,9 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
 
                  # old chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
-                 chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
+                 chip_2.values[connect[1]][0] + 0.8 + const2*(num+1),
+
+                 #chip_2.values[connect[1]][0] + 0.8 + const3,
 
                  # old chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
                  chip_2.values[connect[1]][0] + 0.6,
@@ -209,6 +218,8 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  #new \/
                  chip_2.values[connect[1]][1] - 0.3,
 
+                 #prev_chip2_connection_y,
+
                  # old chip_2.values[connect[1]][1] - 0.15,
                  chip_2.values[connect[1]][1] - 0.3,
 
@@ -224,7 +235,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_1.values[connect[0]][0],
                  x_turn,
                  chip_2.values[connect[1]][0] + const * (num + 1),
-                 chip_2.values[connect[1]][0] + const * (num + 1),
+                 chip_2.values[connect[1]][0] + const2 * (num + 1),
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0] - 0.102,
