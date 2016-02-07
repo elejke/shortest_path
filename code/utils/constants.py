@@ -8,7 +8,7 @@ PIN_NUMBER = 40
 
 # quality minimum estimations:
 L_min = 3
-V_min = 40
+V_min = 32
 S_min = 600
 
 # optimization formula :  K = L_min/L + 2 * V_min/V + 3 * S_min/S
@@ -53,7 +53,13 @@ def objective(connections, subsequences, subsequences_by_layers, chip_1, chip_2)
         V += len(jump_lines)
         S += sum_length(all_lines)
 
-        min_d = min(min_d, min_distance(all_lines))
+        if layer == 0:
+            min_d = min(min_d, min_distance(all_lines),
+                        min_distance_to_pins(all_lines, chip_1.values),
+                        min_distance_to_pins(all_lines, chip_2.values))
+        else:
+            min_d = min(min_d, min_distance(all_lines))
+
         print min_distance(all_lines), min_d
 
     subsequences.pop()

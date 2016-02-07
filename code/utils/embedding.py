@@ -102,7 +102,7 @@ def layers(chip_1, chip_2, connections):
     return new_points, subsequences
 
 
-def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
+def isclose(a, b, rel_tol=1e-09, abs_tol=0.00000000001):
     return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
