@@ -184,7 +184,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
         if num == 0:
             prev_chip2_connection_y = chip_2.values[connect[1]][1] - 0.3
         else:
-            prev_chip2_connection_y = chip_2.values[connect[1]][1] - 0.3
+            prev_chip2_connection_y = chip_2.values[connections.values[ext_seq][0][1]][1]
         if chip_2.values[connect[1]][0] < 14.5:
             x = [chip_1.values[connect[0]][0],
                  chip_1.values[connect[0]][0],
@@ -195,9 +195,9 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
 
                  # old chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
-                 chip_2.values[connect[1]][0] + 0.8 + const2*(num+1),
+                 chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
 
-                 #chip_2.values[connect[1]][0] + 0.8 + const3,
+                 chip_2.values[connect[1]][0] + 0.8 + const3, ##########
 
                  # old chip_2.values[connect[1]][0] + 0.8 + const*(num+1),
                  chip_2.values[connect[1]][0] + 0.6,
@@ -215,10 +215,10 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  0-const*(num+1),
                  y_turn,
 
+                 prev_chip2_connection_y, ##################
+
                  #new \/
                  chip_2.values[connect[1]][1] - 0.3,
-
-                 #prev_chip2_connection_y,
 
                  # old chip_2.values[connect[1]][1] - 0.15,
                  chip_2.values[connect[1]][1] - 0.3,
@@ -235,7 +235,8 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  chip_1.values[connect[0]][0],
                  x_turn,
                  chip_2.values[connect[1]][0] + const * (num + 1),
-                 chip_2.values[connect[1]][0] + const2 * (num + 1),
+                 chip_2.values[connect[1]][0] + const * (num + 1),
+                 chip_2.values[connect[1]][0] + 0.1, #############
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0],
                  chip_2.values[connect[1]][0] - 0.102,
@@ -247,7 +248,7 @@ def embedding(connections, int_seq, ext_seq, chip_1, chip_2, layer):
                  y_turn,
                  # chip_2.values[connect[1]][1] + 0.15,
                  # chip_2.values[connect[1]][1] + 0.15,
-
+                 prev_chip2_connection_y, ###############
                  chip_2.values[connect[1]][1],
                  chip_2.values[connect[1]][1],
                  chip_2.values[connect[1]][1],
@@ -302,8 +303,8 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
     x_turn = np.min(list(zip(*chip_1.values)[0])) - 0.21
     y_turn = np.max(list(zip(*chip_2.values)[1])) + 0.21
 
-    shape_upper = (separator, 12, 2)
-    shape_lower = (len(external_lines)-separator, 12, 2)
+    shape_upper = (separator, 13, 2)
+    shape_lower = (len(external_lines)-separator, 13, 2)
     upper_external = np.zeros(shape_upper)
     lower_external = np.zeros(shape_lower)
 
@@ -313,6 +314,7 @@ def break_external_by_separator(internal_lines, external_lines, separator, chip_
 
         connect_begin = external_lines[num][:2]
         connect_end = external_lines[num][-4:]
+        connect_end = np.append(connect_end, [connect_end[-1]], axis=0)
 
         connect_inter = [[connect_begin[-1][0], 0 - 0.2*(num+1) - (1.2*down_shift-0.05)],
                          [x_turn - const*(num+1), 0 - 0.2*(num+1) - (1.2*down_shift-0.05)],
