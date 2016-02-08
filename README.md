@@ -5,20 +5,19 @@ Skoltech hackathon "Shortest path" solution
 
 1. Отрисовка в виде прямоугольных линий
 
-![My_img](https://raw.githubusercontent.com/elejke/shortest_path/master/pics/squared_all.png?token=AGcTWvGTn2Sy-BZK_DD6nGPXzodQRGU4ks5WwRJAwA%3D%3D)
+![My_img](https://github.com/elejke/shortest_path/blob/master/pics/squared_all.png?raw=true)
 
-2.1 Предложение выделять наибольшие по вложению последовательности
+2. Выделение наибольших по вложению последовательностей. Решение с помощью проектирования координат на одну ось и использования алгоритма поиска максимальной возрастающей подпоследовательности. Результат - наборы таких соединений (на картинке отмечены одним цветом):
 
-2.2 Решение с помощью проектирования координат на одну ось и использования алгоритма поиска максимальной возрастающей подпоследовательности. Результат (на картинке) наборы таких соединений:
-pic
+![My_img](https://github.com/elejke/shortest_path/blob/master/pics/lis_all.png?raw=true)
 
 3. Предложение использовать по 2 набора таких непересекающихся соединений для укладки на один слой в таком виде:
 
-pic
+![My_img](https://github.com/elejke/shortest_path/blob/master/pics/embedding_nosq_test.png?raw=true)
 
 4. Оптимизация длины путём срезания углов.
 
-pic
+![My_img](https://github.com/elejke/shortest_path/blob/master/pics/embedding_with_turns.png?raw=true)
 
 5. Дополнительная оптимизация - проведение некоторых соединений из внешнего (нижнего) круга через верх от внутренних.
 
